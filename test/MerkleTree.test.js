@@ -1,9 +1,10 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
+const { BigNumber } = require("ethers");
+const { generateWallets } = require("../utils/MerkleUtils");
 const { constants } = require("../utils/TestConstants");
 const {} = require("../utils/TestUtils");
-const { BigNumber } = require("ethers");
 
 let owner, ownerAddress;
 
@@ -16,5 +17,9 @@ describe("ArtizenCore Basic Tests", function () {
 
   it("5000 addresses merkle whitelisted, all can claim", async () => {
     //   TODO
+
+    const wallets = generateWallets(20);
   });
+
+  it;
 });
