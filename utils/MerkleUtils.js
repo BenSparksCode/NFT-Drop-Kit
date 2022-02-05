@@ -25,13 +25,26 @@ const getLeaf = (entry) => {
   );
 };
 
-const buildWhitelistMerkleRoot = (whitelistedAddresses) => {
-  const leaves = whitelistedAddresses.map(getLeaf);
+const buildMerkleTree = (addresses) => {
+  const leaves = addresses.map(getLeaf);
   const tree = new MerkleTree(leaves, keccak256, { sort: true });
+  return tree;
+};
+
+const buildMerkleRoot = (addresses) => {
+  const tree = buildMerkleTree(addresses);
   return tree.getHexRoot();
+};
+
+const buildMerkleProof = (addresses, leafAddress) => {
+  const tree = buildMerkleTree(addresses);
+  const proof = tree.getHexProof(leaf);
+  return proof;
 };
 
 module.exports = {
   generateWallets: generateWallets,
-  buildWhitelistMerkleRoot: buildWhitelistMerkleRoot,
+  buildMerkleTree: buildMerkleTree,
+  buildMerkleRoot: buildMerkleRoot,
+  buildMerkleProof: buildMerkleProof,
 };
