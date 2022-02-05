@@ -15,7 +15,7 @@ task("accounts", "Prints the list of accounts", async () => {
 
 module.exports = {
   mocha: {
-    timeout: 100000,
+    timeout: 300000, //300 seconds
   },
   solidity: {
     compilers: [
