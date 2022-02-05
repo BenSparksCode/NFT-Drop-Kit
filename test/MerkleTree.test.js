@@ -262,4 +262,44 @@ describe("Merkle Tree Tests", function () {
       expect(isWhitelisted).to.equal(true);
     }
   });
+
+  it.only("10 000 addresses whitelisted, sparsely checked with view function", async () => {
+    const wallets = generateAddresses(10000);
+    const walletAddresses = wallets.map((w) => w.address);
+    const leafNodes = walletAddresses.map((addr) => keccak256(addr));
+
+    const merkleTree = new MerkleTree(leafNodes, keccak256, {
+      sortPairs: true,
+    });
+    const merkleRoot = merkleTree.getHexRoot();
+
+    // Set Merkle Root in NFT as owner
+    await NFT.connect(owner).setWhitelistMerkleRoot(merkleRoot);
+
+    // Check whitelistMerkleRoot is set as expected
+    expect(await NFT.whitelistMerkleRoot()).to.equal(merkleRoot);
+
+    // loop through whitelisted addresses, skipping 500 at a time
+    for (let i = 0; i < wallets.length; i += 500) {
+      const currentWallet = wallets[i];
+      const hexProof = merkleTree.getHexProof(leafNodes[i]);
+
+      // Check in JS if wallet should be in merkle tree
+      const merkleProofVerification = merkleTree.verify(
+        hexProof,
+        leafNodes[i],
+        merkleRoot
+      );
+      expect(merkleProofVerification).to.equal(true);
+
+      const isWhitelisted = await NFT.isWhitelistedInMerkleProof(
+        currentWallet.address,
+        hexProof
+      );
+
+      console.log("Check passed", isWhitelisted);
+
+      expect(isWhitelisted).to.equal(true);
+    }
+  });
 });
