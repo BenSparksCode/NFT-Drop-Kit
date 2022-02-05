@@ -6,7 +6,6 @@ const generateWallets = (numOfWallets) => {
 
   for (let i = 0; i < numOfWallets; i++) {
     wallets.push(ethers.Wallet.createRandom());
-    console.log(wallets[i].address);
   }
 
   return wallets;
