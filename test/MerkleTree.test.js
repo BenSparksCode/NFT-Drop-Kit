@@ -57,6 +57,10 @@ describe("Merkle Tree Tests", function () {
     expect(merkleProofVerification).to.equal(true);
   });
 
+  it.only("isWhitelistedInMerkleProof view function works correctly", async () => {
+    // TODO
+  });
+
   it("10 addresses merkle whitelisted, all can claim, non-whitelisted claims revert", async () => {
     // Generate 10 wallets, addresses, and hashed leaf nodes
     const wallets = generateWallets(10);
@@ -132,10 +136,8 @@ describe("Merkle Tree Tests", function () {
     }
   });
 
-  it.only("5000 addresses merkle whitelisted, check all are on whitelist in view function", async () => {
-    // TODO
-
-    const wallets = generateWallets(5000);
+  it.only("1000 addresses whitelisted, checked with view function", async () => {
+    const wallets = generateWallets(1000);
     const walletAddresses = wallets.map((w) => w.address);
     const leafNodes = walletAddresses.map((addr) => keccak256(addr));
 
@@ -151,7 +153,7 @@ describe("Merkle Tree Tests", function () {
     expect(await NFT.whitelistMerkleRoot()).to.equal(merkleRoot);
 
     // loop through whitelisted addresses
-    for (let i = 0; i < wallets.length; i += 100) {
+    for (let i = 0; i < wallets.length; i++) {
       const currentWallet = wallets[i];
       const hexProof = merkleTree.getHexProof(leafNodes[i]);
 
@@ -163,10 +165,12 @@ describe("Merkle Tree Tests", function () {
       );
       expect(merkleProofVerification).to.equal(true);
 
-      await NFT.connect(currentWallet).mintWhitelist(hexProof, 1, {
-        gasLimit: 1000000,
-        value: NFT_MINT_COST,
-      });
+      const isWhitelisted = await NFT.isWhitelistedInMerkleProof(
+        currentWallet.address,
+        hexProof
+      );
+
+      expect(isWhitelisted).to.equal(true);
     }
   });
 });

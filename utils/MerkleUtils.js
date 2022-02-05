@@ -8,6 +8,7 @@ const generateWallets = (numOfWallets) => {
   let wallets = [];
 
   for (let i = 0; i < numOfWallets; i++) {
+    console.log("Creating wallet", i + 1, "...");
     wallets.push(
       new ethers.Wallet(
         ethers.Wallet.createRandom().privateKey,
