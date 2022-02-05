@@ -149,5 +149,24 @@ describe("Merkle Tree Tests", function () {
 
     // Check whitelistMerkleRoot is set as expected
     expect(await NFT.whitelistMerkleRoot()).to.equal(merkleRoot);
+
+    // loop through whitelisted addresses
+    for (let i = 0; i < wallets.length; i += 100) {
+      const currentWallet = wallets[i];
+      const hexProof = merkleTree.getHexProof(leafNodes[i]);
+
+      // Check in JS if wallet should be in merkle tree
+      const merkleProofVerification = merkleTree.verify(
+        hexProof,
+        leafNodes[i],
+        merkleRoot
+      );
+      expect(merkleProofVerification).to.equal(true);
+
+      await NFT.connect(currentWallet).mintWhitelist(hexProof, 1, {
+        gasLimit: 1000000,
+        value: NFT_MINT_COST,
+      });
+    }
   });
 });
