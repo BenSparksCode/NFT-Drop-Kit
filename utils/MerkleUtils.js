@@ -13,5 +13,5 @@ const generateWallets = (numOfWallets) => {
 };
 
 module.exports = {
-  generateAddresses: generateAddresses,
+  generateWallets: generateWallets,
 };

@@ -8,7 +8,7 @@ const {} = require("../utils/TestUtils");
 
 let owner, ownerAddress;
 
-describe("ArtizenCore Basic Tests", function () {
+describe("Merkle Tree Tests", function () {
   beforeEach(async () => {
     [owner] = await ethers.getSigners();
 
