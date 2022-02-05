@@ -78,7 +78,7 @@ contract NFT is ERC721Enumerable, Ownable {
 	}
 
 	function isWhitelistedInMerkleProof(address _account, bytes32[] calldata _merkleProof) public view returns (bool) {
-		// TODO
+		return MerkleProof.verify(_merkleProof, whitelistMerkleRoot, keccak256(abi.encodePacked(_account)));
 	}
 
 	function walletOfOwner(address _owner) public view returns (uint256[] memory) {
