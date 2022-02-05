@@ -1,10 +1,14 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
-const { BigNumber } = require("ethers");
+const { MerkleTree } = require("merkletreejs");
+const keccak256 = require("keccak256");
+const { BigNumber, Signer } = require("ethers");
 const {
   generateWallets,
-  buildWhitelistMerkleRoot,
+  buildMerkleTree,
+  buildMerkleRoot,
+  buildMerkleProof,
 } = require("../utils/MerkleUtils");
 const { constants } = require("../utils/TestConstants");
 const {} = require("../utils/TestUtils");
@@ -12,10 +16,11 @@ const {} = require("../utils/TestUtils");
 let owner, ownerAddress;
 let NFT;
 
+const NFT_MINT_COST = ethers.utils.parseEther("0.05");
+
 describe("Merkle Tree Tests", function () {
   beforeEach(async () => {
     [owner] = await ethers.getSigners();
-
     ownerAddress = await owner.getAddress();
 
     const nftFactory = await ethers.getContractFactory("NFT");
@@ -27,39 +32,104 @@ describe("Merkle Tree Tests", function () {
     );
   });
 
-  it("100 addresses merkle whitelisted, all can claim", async () => {
+  it("basic merkle tree works in JS", async () => {
+    // TODO
+
+    let whitelist = [
+      "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+    ];
+
+    const leafNodes = whitelist.map((addr) => keccak256(addr));
+    console.log(leafNodes);
+
+    const merkleTree = new MerkleTree(leafNodes, keccak256, {
+      sortPairs: true,
+    });
+    console.log(merkleTree.toString());
+
+    const root = merkleTree.getRoot();
+
+    const hexProof = merkleTree.getHexProof(leafNodes[1]);
+
+    const merkleProofVerification = merkleTree.verify(
+      hexProof,
+      leafNodes[1],
+      root
+    );
+    console.log("Merkle Proof Verification: ", merkleProofVerification);
+  });
+
+  it.only("100 addresses merkle whitelisted, all can claim", async () => {
     //   TODO
 
-    // Generate 100 wallets and addresses
-    const wallets = generateWallets(100);
+    // Generate 100 wallets, addresses, and hashed leaf nodes
+    const wallets = generateWallets(10);
     const walletAddresses = wallets.map((w) => w.address);
+    const leafNodes = walletAddresses.map((addr) => keccak256(addr));
 
     // Create Merkle Root from 100 addresses for whitelist
-    const merkleRoot = buildWhitelistMerkleRoot(walletAddresses);
-    console.log(merkleRoot);
+    const merkleTree = new MerkleTree(leafNodes, keccak256, {
+      sortPairs: true,
+    });
+    const merkleRoot = merkleTree.getHexRoot();
+
+    console.log("Root:", merkleRoot);
+    console.log("Tree:", merkleTree.toString());
 
     // TODO check merkleRoot is in correct bytes32 format
 
     // Set Merkle Root in NFT as owner
     await NFT.setWhitelistMerkleRoot(merkleRoot);
 
+    // Check whitelistMerkleRoot is set as expected
+    console.log(await NFT.whitelistMerkleRoot());
+    expect(await NFT.whitelistMerkleRoot()).to.equal(merkleRoot);
+
     const evilWallets = generateWallets(10);
 
     // loop through whitelisted addresses
     for (let i = 0; i < wallets.length; i++) {
       const currentWallet = wallets[i];
+      const hexProof = merkleTree.getHexProof(leafNodes[i]);
 
-      // claim NFT via whitelist mint function
+      // Check in JS if wallet should be in merkle tree
+
+      const merkleProofVerification = merkleTree.verify(
+        hexProof,
+        leafNodes[i],
+        merkleRoot
+      );
+      console.log("Merkle Proof Verification: ", merkleProofVerification);
+      expect(merkleProofVerification).to.equal(true);
+
+      await owner.sendTransaction({
+        to: currentWallet.address,
+        value: ethers.utils.parseEther("0.2"),
+      });
+
+      await NFT.connect(currentWallet).mintWhitelist(hexProof, 1, {
+        gasLimit: 1000000,
+        value: NFT_MINT_COST,
+      });
     }
 
     // loop through evil wallets
-    for (let i = 0; i < evilWallets.length; i++) {
-      const currentEvilWallet = evilWallets[i];
+    // for (let i = 0; i < evilWallets.length; i++) {
+    //   const currentEvilWallet = evilWallets[i];
 
-      // Check evil wallet not in whitelist wallet array
+    //   // Check evil wallet not in whitelist wallet array
+    //   const proof = buildMerkleProof(
+    //     walletAddresses,
+    //     currentEvilWallet.address
+    //   );
 
-      // Check evil wallet cannot mint NFT via whitelist function
-    }
+    //   // Check evil wallet cannot mint NFT via whitelist function
+    //   await expect(
+    //     NFT.connect(currentEvilWallet).mintWhitelist(proof, 1)
+    //   ).to.be.revertedWith("Address does not exist in list");
+    // }
   });
 
   it("5000 addresses merkle whitelisted, check all are on whitelist in view function", async () => {
