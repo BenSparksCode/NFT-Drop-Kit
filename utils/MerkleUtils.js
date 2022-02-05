@@ -4,7 +4,7 @@ const { keccak256 } = require("keccak256");
 const { ethers } = require("hardhat");
 const { BigNumber } = require("@ethersproject/bignumber");
 
-const generateWallets = (numOfWallets) => {
+const generateSignerWallets = (numOfWallets) => {
   let wallets = [];
 
   for (let i = 0; i < numOfWallets; i++) {
@@ -20,6 +20,18 @@ const generateWallets = (numOfWallets) => {
   return wallets;
 };
 
+const generateAddresses = (numOfWallets) => {
+  let wallets = [];
+
+  for (let i = 0; i < numOfWallets; i++) {
+    console.log("Creating wallet", i + 1, "...");
+    wallets.push(ethers.Wallet.createRandom());
+  }
+
+  return wallets;
+};
+
 module.exports = {
-  generateWallets: generateWallets,
+  generateSignerWallets: generateSignerWallets,
+  generateAddresses: generateAddresses,
 };
