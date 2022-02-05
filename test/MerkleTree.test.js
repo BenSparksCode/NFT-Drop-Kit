@@ -223,7 +223,7 @@ describe("Merkle Tree Tests", function () {
     }
   });
 
-  it.only("5000 addresses whitelisted, sparsely checked with view function", async () => {
+  it("5000 addresses whitelisted, sparsely checked with view function", async () => {
     const wallets = generateAddresses(5000);
     const walletAddresses = wallets.map((w) => w.address);
     const leafNodes = walletAddresses.map((addr) => keccak256(addr));
