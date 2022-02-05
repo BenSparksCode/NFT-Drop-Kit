@@ -2,7 +2,10 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
 const { BigNumber } = require("ethers");
-const { generateWallets } = require("../utils/MerkleUtils");
+const {
+  generateWallets,
+  buildWhitelistMerkleRoot,
+} = require("../utils/MerkleUtils");
 const { constants } = require("../utils/TestConstants");
 const {} = require("../utils/TestUtils");
 
@@ -19,6 +22,13 @@ describe("Merkle Tree Tests", function () {
     //   TODO
 
     const wallets = generateWallets(20);
+    const walletAddresses = wallets.map((w) => w.address);
+
+    console.log(walletAddresses);
+
+    const merkleRoot = buildWhitelistMerkleRoot(walletAddresses);
+
+    console.log(merkleRoot);
   });
 
   it;
