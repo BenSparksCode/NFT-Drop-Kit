@@ -74,18 +74,16 @@ contract NFT is ERC721Enumerable, Ownable {
         require(supply + _mintAmount <= maxSupply);
         require(!claimed[msg.sender], "NFT is already claimed by this wallet");
 
-        if (msg.sender != owner()) {
-            require(msg.value >= cost * _mintAmount);
-        }
+        require(msg.value >= cost * _mintAmount);
 
-        claimed[msg.sender] = true;
+        claimed[msg.sender] = true; // TODO change to NFT counter for max 5 minted
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
             _safeMint(msg.sender, supply + i);
         }
     }
 
-    function mintReserved(uint256 _mintAmount) public payable onlyOwner {
+    function mintReserved(uint256 _mintAmount) public onlyOwner {
         require(!paused);
         require(_mintAmount > 0);
         require(reservedMinted + _mintAmount <= reservedSupply);
