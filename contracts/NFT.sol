@@ -86,7 +86,9 @@ contract NFT is ERC721Enumerable, Ownable {
     }
 
     function mintReserved(uint256 _mintAmount) public payable onlyOwner {
-        // TODO
+        require(!paused);
+        require(_mintAmount > 0);
+        require(reservedMinted + _mintAmount <= reservedSupply);
 
         uint256 startingID = reservedMinted;
 
