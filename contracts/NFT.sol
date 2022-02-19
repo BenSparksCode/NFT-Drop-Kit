@@ -18,6 +18,7 @@ contract NFT is ERC721Enumerable, Ownable {
     string public baseExtension = ".json";
     uint256 public cost = 0.05 ether;
     uint256 public reservedSupply = 500;
+    uint256 public reservedMinted;
     uint256 public maxSupply = 5000;
     uint256 public maxMintAmount = 5;
     bool public paused = false;
@@ -81,6 +82,17 @@ contract NFT is ERC721Enumerable, Ownable {
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
             _safeMint(msg.sender, supply + i);
+        }
+    }
+
+    function mintReserved(uint256 _mintAmount) public payable onlyOwner {
+        // TODO
+
+        uint256 startingID = reservedMinted;
+
+        for (uint256 i = 1; i <= _mintAmount; i++) {
+            _safeMint(msg.sender, startingID + i);
+            reservedMinted++;
         }
     }
 
