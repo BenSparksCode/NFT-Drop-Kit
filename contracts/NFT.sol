@@ -17,6 +17,7 @@ contract NFT is ERC721Enumerable, Ownable {
     string baseURI;
     string public baseExtension = ".json";
     uint256 public cost = 0.05 ether;
+    uint256 public reservedSupply = 500;
     uint256 public maxSupply = 5000;
     uint256 public maxMintAmount = 5;
     bool public paused = false;
@@ -44,23 +45,23 @@ contract NFT is ERC721Enumerable, Ownable {
     }
 
     // public
-    function mint(uint256 _mintAmount) public payable {
-        uint256 supply = totalSupply();
-        require(!paused);
-        require(_mintAmount > 0);
-        require(_mintAmount <= maxMintAmount);
-        require(supply + _mintAmount <= maxSupply);
+    // function mint(uint256 _mintAmount) public payable {
+    //     uint256 supply = totalSupply();
+    //     require(!paused);
+    //     require(_mintAmount > 0);
+    //     require(_mintAmount <= maxMintAmount);
+    //     require(supply + _mintAmount <= maxSupply);
 
-        if (msg.sender != owner()) {
-            require(msg.value >= cost * _mintAmount);
-        }
+    //     if (msg.sender != owner()) {
+    //         require(msg.value >= cost * _mintAmount);
+    //     }
 
-        for (uint256 i = 1; i <= _mintAmount; i++) {
-            _safeMint(msg.sender, supply + i);
-        }
-    }
+    //     for (uint256 i = 1; i <= _mintAmount; i++) {
+    //         _safeMint(msg.sender, supply + i);
+    //     }
+    // }
 
-    function mintWhitelist(bytes32[] calldata merkleProof, uint256 _mintAmount)
+    function mint(bytes32[] calldata merkleProof, uint256 _mintAmount)
         public
         payable
         isValidMerkleProof(merkleProof, whitelistMerkleRoot)
