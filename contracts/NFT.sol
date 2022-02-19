@@ -5,6 +5,12 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+// TODO keep 500 reserved for artist
+// TODO only 1 mint function - with whitelist
+// TODO Enforce limit of 5 per whitelisted address
+// TODO Build merkle root from CSV file script
+// TODO Scripts for deploy and reveal
+
 contract NFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
