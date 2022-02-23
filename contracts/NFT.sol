@@ -27,8 +27,8 @@ contract NFT is ERC721Enumerable, Ownable {
 
     bytes32 public whitelistMerkleRoot;
 
-    // keep track of those on whitelist who have claimed their NFT
-    mapping(address => bool) public claimed;
+    // keep track of how many each address has claimed
+    mapping(address => uint256) public claimedAmount;
 
     constructor(
         string memory _name,
@@ -70,13 +70,15 @@ contract NFT is ERC721Enumerable, Ownable {
         uint256 supply = totalSupply();
         require(!paused);
         require(_mintAmount > 0);
-        require(_mintAmount <= maxMintAmount);
         require(supply + _mintAmount <= maxSupply);
-        require(!claimed[msg.sender], "NFT is already claimed by this wallet");
+        require(
+            claimedAmount[msg.sender] + _mintAmount <= maxMintAmount,
+            "NFT is already claimed by this wallet"
+        );
 
         require(msg.value >= cost * _mintAmount);
 
-        claimed[msg.sender] = true; // TODO change to NFT counter for max 5 minted
+        claimedAmount[msg.sender] += _mintAmount;
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
             _safeMint(msg.sender, supply + i);
