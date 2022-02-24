@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// TODO keep 500 reserved for artist
 // TODO only 1 mint function - with whitelist
 // TODO Enforce limit of 5 per whitelisted address
 // TODO Build merkle root from CSV file script
@@ -23,6 +22,8 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public maxSupply = 5000;
     uint256 public maxMintAmountPresale = 2;
     uint256 public maxMintAmountPublic = 10;
+    bool public whitelistMintingEnabled = false; //TODO setters for these
+    bool public publicMintingEnabled = false;
     bool public paused = false;
     bool public revealed = false;
     string public notRevealedUri;
@@ -47,9 +48,12 @@ contract NFT is ERC721Enumerable, Ownable {
         return baseURI;
     }
 
-    function mint(bytes32[] calldata merkleProof, uint256 _mintAmount)
+    function
+
+    function mintWhitelist(bytes32[] calldata merkleProof, uint256 _mintAmount)
         public
         payable
+        onlyHumans
         isValidMerkleProof(merkleProof, whitelistMerkleRoot)
     {
         uint256 supply = totalSupply();
@@ -181,6 +185,14 @@ contract NFT is ERC721Enumerable, Ownable {
         (bool os, ) = payable(owner()).call{value: address(this).balance}("");
         require(os);
         // =============================================================================
+    }
+
+    /**
+     * @dev Only allows EOA accounts to call function
+     */
+    modifier onlyHumans() {
+        require(tx.origin == msg.sender, "Only humans allowed");
+        _;
     }
 
     /**
