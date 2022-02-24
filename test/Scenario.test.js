@@ -103,7 +103,21 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
   });
-  it("Owner cannot mint 251", async () => {});
+  it("Owner cannot mint 251", async () => {
+    await expect(NFT.connect(owner).mintReserved(251)).to.be.revertedWith(
+      "Cannot mint more than reserved supply"
+    );
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(0);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await expect(NFT.connect(owner).mintReserved(1)).to.be.revertedWith(
+      "Cannot mint more than reserved supply"
+    );
+  });
   it("Owner can mint 250 in 5 separate batches of 50 each", async () => {});
 
   // WHITELIST
