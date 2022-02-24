@@ -118,7 +118,18 @@ describe("Scenario Tests", function () {
       "Cannot mint more than reserved supply"
     );
   });
-  it("Owner can mint 250 in 5 separate batches of 50 each", async () => {});
+  it("Owner can mint 250 in 5 separate batches of 50 each", async () => {
+    await NFT.connect(owner).mintReserved(50);
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(50);
+    await NFT.connect(owner).mintReserved(50);
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(100);
+    await NFT.connect(owner).mintReserved(50);
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(150);
+    await NFT.connect(owner).mintReserved(50);
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(200);
+    await NFT.connect(owner).mintReserved(50);
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+  });
 
   // WHITELIST
   it("Whitelisted user cannot mint if whitelist disabled", async () => {});
