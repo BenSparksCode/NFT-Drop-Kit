@@ -5,12 +5,6 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// TODO only 1 mint function - with whitelist
-// TODO Enforce limit of 5 per whitelisted address
-// TODO Build merkle root from CSV file script
-// TODO Scripts for deploy and reveal
-// TODO add MEV tx.origin = msg.sender protection
-
 contract NFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
@@ -215,7 +209,7 @@ contract NFT is ERC721Enumerable, Ownable {
     }
 
     function withdraw() public payable onlyOwner {
-        // This will payout the owner 95% of the contract balance.
+        // This will payout the owner 100% of the contract balance.
         // Do not remove this otherwise you will not be able to withdraw the funds.
         // =============================================================================
         (bool os, ) = payable(owner()).call{value: address(this).balance}("");
