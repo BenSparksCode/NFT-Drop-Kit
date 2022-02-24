@@ -147,7 +147,7 @@ describe("Scenario Tests", function () {
       })
     ).to.be.revertedWith("Presale minting is not enabled");
   });
-  it.only("Whitelisted user can mint if whitelist enabled", async () => {
+  it("Whitelisted user can mint if whitelist enabled", async () => {
     const wlIndex = 3;
     const hexProof = merkleTree.getHexProof(leafNodes[wlIndex]);
 
@@ -164,7 +164,22 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.balanceOf(whitelistWallets[wlIndex].address)).to.equal(1);
   });
-  it("Non-Whitelisted user cannot mint if whitelist enabled and public disabled", async () => {});
+  it.only("Non-Whitelisted user cannot mint if whitelist enabled and public disabled", async () => {
+    const index = 3;
+
+    await send1ETH(owner, await randomWallets[index].getAddress());
+
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+
+    expect(await NFT.presaleMintingEnabled()).to.equal(true);
+
+    await expect(
+      NFT.connect(randomWallets[index]).mintPublic(1, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST,
+      })
+    ).to.be.revertedWith("Public minting is not enabled");
+  });
   it("Whitelisted user can mint 2 if whitelist enabled and public disabled", async () => {});
   it("Whitelisted user cannot mint 3 if whitelist enabled and public disabled", async () => {});
   it("Whitelist user cannot mint for less than 0.08 ETH", async () => {});
