@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // TODO Enforce limit of 5 per whitelisted address
 // TODO Build merkle root from CSV file script
 // TODO Scripts for deploy and reveal
+// TODO add MEV tx.origin = msg.sender protection
 
 contract NFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
@@ -44,23 +45,6 @@ contract NFT is ERC721Enumerable, Ownable {
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
     }
-
-    // public
-    // function mint(uint256 _mintAmount) public payable {
-    //     uint256 supply = totalSupply();
-    //     require(!paused);
-    //     require(_mintAmount > 0);
-    //     require(_mintAmount <= maxMintAmount);
-    //     require(supply + _mintAmount <= maxSupply);
-
-    //     if (msg.sender != owner()) {
-    //         require(msg.value >= cost * _mintAmount);
-    //     }
-
-    //     for (uint256 i = 1; i <= _mintAmount; i++) {
-    //         _safeMint(msg.sender, supply + i);
-    //     }
-    // }
 
     function mint(bytes32[] calldata merkleProof, uint256 _mintAmount)
         public
