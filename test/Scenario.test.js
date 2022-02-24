@@ -132,7 +132,21 @@ describe("Scenario Tests", function () {
   });
 
   // WHITELIST
-  it("Whitelisted user cannot mint if whitelist disabled", async () => {});
+  it.only("Whitelisted user cannot mint if whitelist disabled", async () => {
+    const wlIndex = 3;
+    const hexProof = merkleTree.getHexProof(leafNodes[wlIndex]);
+
+    await send1ETH(owner, await whitelistWallets[wlIndex].getAddress());
+
+    expect(await NFT.presaleMintingEnabled()).to.equal(false);
+
+    await expect(
+      NFT.connect(whitelistWallets[wlIndex]).mintPresale(hexProof, 1, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST,
+      })
+    ).to.be.revertedWith("Presale minting is not enabled");
+  });
   it("Whitelisted user can mint if whitelist enabled", async () => {});
   it("Non-Whitelisted user cannot mint if whitelist enabled and public disabled", async () => {});
   it("Whitelisted user can mint 2 if whitelist enabled and public disabled", async () => {});
