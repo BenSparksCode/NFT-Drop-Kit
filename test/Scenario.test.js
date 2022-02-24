@@ -205,11 +205,53 @@ describe("Scenario Tests", function () {
       amountMinted
     );
   });
-  it("Whitelisted user cannot mint 3 if whitelist enabled and public disabled", async () => {});
-  it("Whitelist user cannot mint for less than 0.08 ETH", async () => {});
+  it("Whitelisted user cannot mint 3 if whitelist enabled and public disabled", async () => {
+    const amountMinted = 3;
+    const index = 5;
+    const hexProof = merkleTree.getHexProof(leafNodes[index]);
+
+    await send1ETH(owner, await whitelistWallets[index].getAddress());
+
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+
+    expect(await NFT.presaleMintingEnabled()).to.equal(true);
+    expect(await NFT.publicMintingEnabled()).to.equal(false);
+
+    await expect(
+      NFT.connect(whitelistWallets[index]).mintPresale(hexProof, amountMinted, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST.mul(amountMinted),
+      })
+    ).to.be.revertedWith("Mints exceed 2 per address");
+
+    expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
+  });
+  it("Whitelist user cannot mint for less than 0.08 ETH", async () => {
+    const amountMinted = 1;
+    const index = 5;
+    const hexProof = merkleTree.getHexProof(leafNodes[index]);
+
+    await send1ETH(owner, await whitelistWallets[index].getAddress());
+
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+
+    expect(await NFT.presaleMintingEnabled()).to.equal(true);
+    expect(await NFT.publicMintingEnabled()).to.equal(false);
+
+    await expect(
+      NFT.connect(whitelistWallets[index]).mintPresale(hexProof, amountMinted, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST.mul(amountMinted).sub(1),
+      })
+    ).to.be.revertedWith("Not enough ETH");
+
+    expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
+  });
 
   // PUBLIC
-  it("Public user cannot mint if public disabled", async () => {});
+  it("Public user cannot mint if public disabled", async () => {
+    // TODO
+  });
   it("Public user can mint if public enabled", async () => {});
   it("Public user can mint 10", async () => {});
   it("Public user cannot mint 11", async () => {});
