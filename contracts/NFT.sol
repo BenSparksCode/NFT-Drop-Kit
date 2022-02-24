@@ -48,7 +48,9 @@ contract NFT is ERC721Enumerable, Ownable {
         return baseURI;
     }
 
-    function
+    function mintPublic(uint256 _mintAmount) public payable onlyHumans {
+        // TODO
+    }
 
     function mintWhitelist(bytes32[] calldata merkleProof, uint256 _mintAmount)
         public
