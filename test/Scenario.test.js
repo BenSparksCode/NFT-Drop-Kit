@@ -79,10 +79,19 @@ describe("Scenario Tests", function () {
       })
     ).to.be.revertedWith("Minting is paused");
   });
-  it("No minting from anyone if max supply hit", async () => {});
+  it("No minting from anyone if max supply hit", async () => {
+    //   TODO
+  });
 
   // RESERVED
-  it("Owner can mint 250 while presale and whitelist mints disabled", async () => {});
+  it("Owner can mint 250 while presale and whitelist mints disabled", async () => {
+    expect(await NFT.presaleMintingEnabled()).to.equal(false);
+    expect(await NFT.publicMintingEnabled()).to.equal(false);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+  });
   it("Owner can mint 250 while presale and whitelist mints enabled", async () => {});
   it("Owner cannot mint 251", async () => {});
   it("Owner can mint 250 in 5 separate batches of 50 each", async () => {});
