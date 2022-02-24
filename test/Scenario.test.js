@@ -51,7 +51,7 @@ describe("Scenario Tests", function () {
   });
 
   // PAUSED, MAX SUPPLY
-  it.only("No minting from anyone while paused", async () => {
+  it("No minting from anyone while paused", async () => {
     const hexProof = merkleTree.getHexProof(leafNodes[0]);
 
     await send1ETH(owner, await whitelistWallets[0].getAddress());
@@ -106,4 +106,7 @@ describe("Scenario Tests", function () {
   it("URI is as expected before reveal", async () => {});
   it("URI is as expected after reveal", async () => {});
   it("Both URIs can be changed after deployment", async () => {});
+
+  // ONLY OWNER
+  it("Only owner can withdraw all ETH", async () => {});
 });
