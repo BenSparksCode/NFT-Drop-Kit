@@ -31,7 +31,12 @@ const generateAddresses = (numOfWallets) => {
   return wallets;
 };
 
+const createWalletFromPrivKey = (privKey) => {
+  return new ethers.Wallet(privKey, ethers.provider);
+};
+
 module.exports = {
   generateSignerWallets: generateSignerWallets,
   generateAddresses: generateAddresses,
+  createWalletFromPrivKey: createWalletFromPrivKey,
 };

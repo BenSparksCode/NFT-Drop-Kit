@@ -7,6 +7,7 @@ const { BigNumber, Signer } = require("ethers");
 const {
   generateSignerWallets,
   generateAddresses,
+  createWalletFromPrivKey,
 } = require("../utils/MerkleUtils");
 const { constants } = require("../utils/TestConstants");
 const {} = require("../utils/TestUtils");
@@ -14,7 +15,13 @@ const {} = require("../utils/TestUtils");
 let owner, ownerAddress;
 let NFT;
 
-const NFT_MINT_COST = ethers.utils.parseEther("0.05");
+let whitelistWallets = [];
+
+// Build array of whitelisted wallets
+for (let i = 0; i < constants.WHITELIST_PRIV_KEYS; i++) {
+  const privKey = constants.WHITELIST_PRIV_KEYS[i];
+  whitelistWallets.push(createWalletFromPrivKey(privKey));
+}
 
 describe("Scenario Tests", function () {
   beforeEach(async () => {
@@ -31,7 +38,10 @@ describe("Scenario Tests", function () {
   });
 
   // PAUSED, MAX SUPPLY
-  it("No minting from anyone while paused", async () => {});
+  it.only("No minting from anyone while paused", async () => {
+    //   TODO
+    console.log("asdfas");
+  });
   it("No minting from anyone if max supply hit", async () => {});
 
   // RESERVED
