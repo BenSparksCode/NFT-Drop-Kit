@@ -92,7 +92,17 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
   });
-  it("Owner can mint 250 while presale and whitelist mints enabled", async () => {});
+  it("Owner can mint 250 while presale and whitelist mints enabled", async () => {
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    expect(await NFT.presaleMintingEnabled()).to.equal(true);
+    expect(await NFT.publicMintingEnabled()).to.equal(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+  });
   it("Owner cannot mint 251", async () => {});
   it("Owner can mint 250 in 5 separate batches of 50 each", async () => {});
 
