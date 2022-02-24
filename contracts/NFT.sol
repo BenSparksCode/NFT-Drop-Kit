@@ -17,11 +17,12 @@ contract NFT is ERC721Enumerable, Ownable {
 
     string baseURI;
     string public baseExtension = ".json";
-    uint256 public cost = 0.05 ether;
-    uint256 public reservedSupply = 500;
+    uint256 public cost = 0.08 ether;
+    uint256 public reservedSupply = 250;
     uint256 public reservedMinted;
     uint256 public maxSupply = 5000;
-    uint256 public maxMintAmount = 5;
+    uint256 public maxMintAmountPresale = 2;
+    uint256 public maxMintAmountPublic = 10;
     bool public paused = false;
     bool public revealed = false;
     string public notRevealedUri;
