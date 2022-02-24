@@ -148,23 +148,23 @@ describe("Scenario Tests", function () {
     ).to.be.revertedWith("Presale minting is not enabled");
   });
   it("Whitelisted user can mint if whitelist enabled", async () => {
-    const wlIndex = 3;
-    const hexProof = merkleTree.getHexProof(leafNodes[wlIndex]);
+    const index = 3;
+    const hexProof = merkleTree.getHexProof(leafNodes[index]);
 
-    await send1ETH(owner, await whitelistWallets[wlIndex].getAddress());
+    await send1ETH(owner, await whitelistWallets[index].getAddress());
 
     await NFT.connect(owner).setPresaleMintingEnabled(true);
 
     expect(await NFT.presaleMintingEnabled()).to.equal(true);
 
-    await NFT.connect(whitelistWallets[wlIndex]).mintPresale(hexProof, 1, {
+    await NFT.connect(whitelistWallets[index]).mintPresale(hexProof, 1, {
       gasLimit: 1000000,
       value: constants.MINT_COST,
     });
 
-    expect(await NFT.balanceOf(whitelistWallets[wlIndex].address)).to.equal(1);
+    expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(1);
   });
-  it.only("Non-Whitelisted user cannot mint if whitelist enabled and public disabled", async () => {
+  it("Non-Whitelisted user cannot mint if whitelist enabled and public disabled", async () => {
     const index = 3;
 
     await send1ETH(owner, await randomWallets[index].getAddress());
@@ -180,7 +180,31 @@ describe("Scenario Tests", function () {
       })
     ).to.be.revertedWith("Public minting is not enabled");
   });
-  it("Whitelisted user can mint 2 if whitelist enabled and public disabled", async () => {});
+  it("Whitelisted user can mint 2 if whitelist enabled and public disabled", async () => {
+    const amountMinted = 2;
+    const index = 5;
+    const hexProof = merkleTree.getHexProof(leafNodes[index]);
+
+    await send1ETH(owner, await whitelistWallets[index].getAddress());
+
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+
+    expect(await NFT.presaleMintingEnabled()).to.equal(true);
+    expect(await NFT.publicMintingEnabled()).to.equal(false);
+
+    await NFT.connect(whitelistWallets[index]).mintPresale(
+      hexProof,
+      amountMinted,
+      {
+        gasLimit: 1000000,
+        value: constants.MINT_COST.mul(amountMinted),
+      }
+    );
+
+    expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(
+      amountMinted
+    );
+  });
   it("Whitelisted user cannot mint 3 if whitelist enabled and public disabled", async () => {});
   it("Whitelist user cannot mint for less than 0.08 ETH", async () => {});
 
