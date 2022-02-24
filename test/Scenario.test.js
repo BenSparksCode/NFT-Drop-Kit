@@ -10,18 +10,28 @@ const {
   createWalletFromPrivKey,
 } = require("../utils/MerkleUtils");
 const { constants } = require("../utils/TestConstants");
-const {} = require("../utils/TestUtils");
+const { send1ETH } = require("../utils/TestUtils");
 
 let owner, ownerAddress;
 let NFT;
 
 let whitelistWallets = [];
+let randomWallets = generateSignerWallets(10);
 
 // Build array of whitelisted wallets
-for (let i = 0; i < constants.WHITELIST_PRIV_KEYS; i++) {
+for (let i = 0; i < constants.WHITELIST_PRIV_KEYS.length; i++) {
   const privKey = constants.WHITELIST_PRIV_KEYS[i];
   whitelistWallets.push(createWalletFromPrivKey(privKey));
 }
+
+// MERKLE TREE STUFF
+const leafNodes = whitelistWallets
+  .map((w) => w.address)
+  .map((addr) => keccak256(addr));
+const merkleTree = new MerkleTree(leafNodes, keccak256, {
+  sortPairs: true,
+});
+const merkleRoot = merkleTree.getHexRoot();
 
 describe("Scenario Tests", function () {
   beforeEach(async () => {
@@ -32,15 +42,42 @@ describe("Scenario Tests", function () {
     NFT = await nftFactory.deploy(
       "Teenage Mutant Ninja Turtles",
       "TMNT",
-      "hiddenturtles.com",
-      "revealedturtles.com"
+      constants.HIDDEN_URI,
+      constants.REVEALED_URI
     );
+
+    // Set Merkle Root in NFT as owner
+    await NFT.connect(owner).setWhitelistMerkleRoot(merkleRoot);
   });
 
   // PAUSED, MAX SUPPLY
   it.only("No minting from anyone while paused", async () => {
-    //   TODO
-    console.log("asdfas");
+    const hexProof = merkleTree.getHexProof(leafNodes[0]);
+
+    await send1ETH(owner, await whitelistWallets[0].getAddress());
+    await send1ETH(owner, await randomWallets[0].getAddress());
+
+    await NFT.connect(owner).pause(true);
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await expect(NFT.connect(owner).mintReserved(1)).to.be.revertedWith(
+      "Minting is paused"
+    );
+
+    await expect(
+      NFT.connect(whitelistWallets[0]).mintPresale(hexProof, 1, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST,
+      })
+    ).to.be.revertedWith("Minting is paused");
+
+    await expect(
+      NFT.connect(randomWallets[0]).mintPublic(1, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST,
+      })
+    ).to.be.revertedWith("Minting is paused");
   });
   it("No minting from anyone if max supply hit", async () => {});
 

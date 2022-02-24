@@ -31,6 +31,8 @@ const CONSTANTS = {
   MAX_MINT_PUBLIC: 10,
   TEAM_TOKENS: 250,
   MAX_SUPPLY: 5000,
+  HIDDEN_URI: "HIDDEN",
+  REVEALED_URI: "REVEALED",
 };
 
 module.exports = {

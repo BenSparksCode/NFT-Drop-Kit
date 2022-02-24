@@ -27,8 +27,16 @@ const burnTokenBalance = async (signer, tokenContract) => {
     .transfer("0x000000000000000000000000000000000000dEaD", bal);
 };
 
+const send1ETH = async (ownerSigner, recipientAddress) => {
+  await ownerSigner.sendTransaction({
+    to: recipientAddress,
+    value: ethers.utils.parseEther("1"),
+  });
+};
+
 module.exports = {
   currentTime: currentTime,
   fastForward: fastForward,
   burnTokenBalance: burnTokenBalance,
+  send1ETH: send1ETH,
 };
