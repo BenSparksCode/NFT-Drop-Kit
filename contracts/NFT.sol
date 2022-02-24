@@ -22,7 +22,7 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public maxSupply = 5000;
     uint256 public maxMintAmountPresale = 2;
     uint256 public maxMintAmountPublic = 10;
-    bool public whitelistMintingEnabled = false;
+    bool public presaleMintingEnabled = false;
     bool public publicMintingEnabled = false;
     bool public paused = false;
     bool public revealed = false;
@@ -52,22 +52,26 @@ contract NFT is ERC721Enumerable, Ownable {
         // TODO
     }
 
-    function mintWhitelist(bytes32[] calldata merkleProof, uint256 _mintAmount)
+    function mintPresale(bytes32[] calldata merkleProof, uint256 _mintAmount)
         public
         payable
         onlyHumans
         isValidMerkleProof(merkleProof, whitelistMerkleRoot)
     {
         uint256 supply = totalSupply();
-        require(!paused);
-        require(_mintAmount > 0);
-        require(supply + _mintAmount <= maxSupply);
+        require(presaleMintingEnabled, "Presale minting is not enabled");
+        require(!paused, "Minting is paused");
+        require(_mintAmount > 0, "Cannot mint 0");
+        require(
+            supply + _mintAmount <= maxSupply,
+            "Cannot mint more than max supply"
+        );
         require(
             claimedAmount[msg.sender] + _mintAmount <= maxMintAmount,
             "NFT is already claimed by this wallet"
         );
 
-        require(msg.value >= cost * _mintAmount);
+        require(msg.value >= cost * _mintAmount, "Not enough ETH");
 
         claimedAmount[msg.sender] += _mintAmount;
 
@@ -77,9 +81,12 @@ contract NFT is ERC721Enumerable, Ownable {
     }
 
     function mintReserved(uint256 _mintAmount) public onlyOwner {
-        require(!paused);
-        require(_mintAmount > 0);
-        require(reservedMinted + _mintAmount <= reservedSupply);
+        require(!paused, "Minting is paused");
+        require(_mintAmount > 0, "Cannot mint 0");
+        require(
+            reservedMinted + _mintAmount <= reservedSupply,
+            "Cannot mint more than reserved supply"
+        );
 
         uint256 startingID = reservedMinted;
 
@@ -149,8 +156,8 @@ contract NFT is ERC721Enumerable, Ownable {
         revealed = true;
     }
 
-    function setWhitelistMintingEnabled(bool _enabled) external onlyOwner {
-        whitelistMintingEnabled = _enabled;
+    function setPresaleMintingEnabled(bool _enabled) external onlyOwner {
+        presaleMintingEnabled = _enabled;
     }
 
     function setPublicMintingEnabled(bool _enabled) external onlyOwner {
