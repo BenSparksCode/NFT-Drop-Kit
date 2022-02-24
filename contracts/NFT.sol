@@ -31,7 +31,7 @@ contract NFT is ERC721Enumerable, Ownable {
     bytes32 public whitelistMerkleRoot;
 
     // keep track of how many each address has claimed
-    mapping(address => uint256) public claimedAmount;
+    mapping(address => uint256) public mintedAmount;
 
     constructor(
         string memory _name,
@@ -49,7 +49,26 @@ contract NFT is ERC721Enumerable, Ownable {
     }
 
     function mintPublic(uint256 _mintAmount) public payable onlyHumans {
-        // TODO
+        uint256 supply = totalSupply();
+        require(publicMintingEnabled, "Public minting is not enabled");
+        require(!paused, "Minting is paused");
+        require(_mintAmount > 0, "Cannot mint 0");
+        require(
+            supply + _mintAmount <= maxSupply,
+            "Cannot mint more than max supply"
+        );
+        require(
+            mintedAmount[msg.sender] + _mintAmount <= maxMintAmountPublic,
+            "Mints exceed 10 per address"
+        );
+
+        require(msg.value >= cost * _mintAmount, "Not enough ETH");
+
+        mintedAmount[msg.sender] += _mintAmount;
+
+        for (uint256 i = 1; i <= _mintAmount; i++) {
+            _safeMint(msg.sender, supply + i);
+        }
     }
 
     function mintPresale(bytes32[] calldata merkleProof, uint256 _mintAmount)
@@ -67,13 +86,13 @@ contract NFT is ERC721Enumerable, Ownable {
             "Cannot mint more than max supply"
         );
         require(
-            claimedAmount[msg.sender] + _mintAmount <= maxMintAmount,
-            "NFT is already claimed by this wallet"
+            mintedAmount[msg.sender] + _mintAmount <= maxMintAmountPresale,
+            "Mints exceed 2 per address"
         );
 
         require(msg.value >= cost * _mintAmount, "Not enough ETH");
 
-        claimedAmount[msg.sender] += _mintAmount;
+        mintedAmount[msg.sender] += _mintAmount;
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
             _safeMint(msg.sender, supply + i);
@@ -172,8 +191,8 @@ contract NFT is ERC721Enumerable, Ownable {
         cost = _newCost;
     }
 
-    function setmaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner {
-        maxMintAmount = _newmaxMintAmount;
+    function setMaxMintAmountPublic(uint256 _newMax) public onlyOwner {
+        maxMintAmountPublic = _newMax;
     }
 
     function setNotRevealedURI(string memory _notRevealedURI) public onlyOwner {
