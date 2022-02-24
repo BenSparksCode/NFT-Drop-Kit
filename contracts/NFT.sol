@@ -22,7 +22,7 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public maxSupply = 5000;
     uint256 public maxMintAmountPresale = 2;
     uint256 public maxMintAmountPublic = 10;
-    bool public whitelistMintingEnabled = false; //TODO setters for these
+    bool public whitelistMintingEnabled = false;
     bool public publicMintingEnabled = false;
     bool public paused = false;
     bool public revealed = false;
@@ -145,6 +145,14 @@ contract NFT is ERC721Enumerable, Ownable {
 
     function reveal() public onlyOwner {
         revealed = true;
+    }
+
+    function setWhitelistMintingEnabled(bool _enabled) external onlyOwner {
+        whitelistMintingEnabled = _enabled;
+    }
+
+    function setPublicMintingEnabled(bool _enabled) external onlyOwner {
+        publicMintingEnabled = _enabled;
     }
 
     function setWhitelistMerkleRoot(bytes32 merkleRoot) external onlyOwner {
