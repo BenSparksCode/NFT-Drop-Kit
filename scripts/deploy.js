@@ -96,6 +96,15 @@ async function main() {
 
   // TODO
 
+  const nft = await deploy(
+    "NFT",
+    ["Test Apes", "TEST", "hidden uri", "revealed uri"],
+    {},
+    {}
+  );
+
+  contracts.push(nft);
+
   // === EXTRA SETUP TRANSACTIONS ===
 
   // TODO

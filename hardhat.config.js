@@ -65,6 +65,11 @@ module.exports = {
       accounts: [`${process.env.POLYGON_DEPLOYER_PRIV_KEY}`],
       chainId: 137,
     },
+    rinkeby: {
+      url: "https://eth-rinkeby.alchemyapi.io/v2/" + process.env.ALCHEMY_API,
+      accounts: [`${process.env.RINKEBY_DEPLOYER_PRIV_KEY}`],
+      chainId: 4,
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
