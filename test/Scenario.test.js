@@ -250,7 +250,21 @@ describe("Scenario Tests", function () {
 
   // PUBLIC
   it("Public user cannot mint if public disabled", async () => {
-    // TODO
+    const amountMinted = 1;
+    const index = 5;
+
+    await send1ETH(owner, await whitelistWallets[index].getAddress());
+
+    expect(await NFT.publicMintingEnabled()).to.equal(false);
+
+    await expect(
+      NFT.connect(whitelistWallets[index]).mintPublic(amountMinted, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST.mul(amountMinted).sub(1),
+      })
+    ).to.be.revertedWith("Public minting is not enabled");
+
+    expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
   });
   it("Public user can mint if public enabled", async () => {});
   it("Public user can mint 10", async () => {});
