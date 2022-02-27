@@ -192,6 +192,11 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
         cost = _newCost;
     }
 
+    function setRoyalty(uint256 _newRoyaltyPercentage) public onlyOwner {
+        require(_newRoyaltyPercentage <= SCALE, "Royalty percentage too high");
+        royaltyPercentage = _newRoyaltyPercentage;
+    }
+
     function setMaxMintAmountPublic(uint256 _newMax) public onlyOwner {
         maxMintAmountPublic = _newMax;
     }

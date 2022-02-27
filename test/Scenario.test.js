@@ -291,4 +291,6 @@ describe("Scenario Tests", function () {
 
   // ONLY OWNER
   it("Only owner can withdraw all ETH", async () => {});
+  it("Only owner can set royalty percentage", async () => {});
+  it("Only owner or reserve minter can mint reserved NFTs", async () => {});
 });
