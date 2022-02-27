@@ -285,6 +285,9 @@ describe("Scenario Tests", function () {
   it("Royalty calculated correctly with royaltyInfo view function", async () => {
     // TODO
   });
+  it("royaltyInfo returns 0 on non-existant token query", async () => {
+    // TODO
+  });
 
   // ONLY OWNER
   it("Only owner can withdraw all ETH", async () => {});
