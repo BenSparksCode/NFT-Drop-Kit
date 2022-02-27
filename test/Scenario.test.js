@@ -83,6 +83,7 @@ describe("Scenario Tests", function () {
     //   TODO
   });
 
+  // TODO - add reserveRecipient address
   // RESERVED
   it("Owner can mint 250 while presale and whitelist mints disabled", async () => {
     expect(await NFT.presaleMintingEnabled()).to.equal(false);

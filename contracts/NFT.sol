@@ -11,7 +11,7 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
 
     // Royalty vars
     address public constant royaltyRecipient =
-        0x339Ff26CF5E9332b59A6E37C2453c4B335b839d1;
+        0x339Ff26CF5E9332b59A6E37C2453c4B335b839d1; // koolkidz.eth
     uint256 public royaltyPercentage = 750; // starting at 7.5% royalty
     uint256 public SCALE = 10000;
 
@@ -100,7 +100,11 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
         }
     }
 
-    function mintReserved(uint256 _mintAmount) public onlyOwner {
+    function mintReserved(uint256 _mintAmount) public {
+        require(
+            msg.sender == owner() || msg.sender == royaltyRecipient,
+            "Only owners can mint reserved"
+        );
         require(!paused, "Minting is paused");
         require(_mintAmount > 0, "Cannot mint 0");
         require(
