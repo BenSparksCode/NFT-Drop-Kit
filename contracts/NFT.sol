@@ -115,7 +115,7 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
         uint256 startingID = reservedMinted;
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
-            _safeMint(msg.sender, startingID + i);
+            _mint(msg.sender, startingID + i);
             reservedMinted++;
         }
     }

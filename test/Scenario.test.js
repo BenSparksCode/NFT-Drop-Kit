@@ -81,11 +81,21 @@ describe("Scenario Tests", function () {
       })
     ).to.be.revertedWith("Minting is paused");
   });
-  it("No minting from anyone if max supply hit", async () => {
-    //   TODO
-    await NFT.connect(owner).setPresaleMintingEnabled(true);
-    await NFT.connect(owner).setPublicMintingEnabled(true);
-  });
+  // it("No minting from anyone if max supply hit", async () => {
+  //   //   TODO
+
+  //   // Code to use in public wallet creation and funding loop
+  //   await send1ETH(owner, await whitelistWallets[index].getAddress());
+  //   await NFT.connect(whitelistWallets[index]).mintPresale(hexProof, 1, {
+  //     gasLimit: 1000000,
+  //     value: constants.MINT_COST,
+  //   });
+
+  //   await NFT.connect(owner).setPublicMintingEnabled(true);
+
+  //   await NFT.connect(owner).mintReserved(250);
+  //   await NFT.connect(owner).mintPublic(4750); //TODO fix to loop public addresses and mint 10 each
+  // });
 
   // RESERVED
   it("Owner can mint 250 while presale and whitelist mints disabled", async () => {
