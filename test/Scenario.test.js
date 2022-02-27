@@ -248,6 +248,10 @@ describe("Scenario Tests", function () {
     expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
   });
 
+  it("If reserved mints 10, next whitelist mint should be ID 251", async () => {
+    // TODO
+  });
+
   // PUBLIC
   it("Public user cannot mint if public disabled", async () => {
     const amountMinted = 1;
@@ -270,11 +274,17 @@ describe("Scenario Tests", function () {
   it("Public user can mint 10", async () => {});
   it("Public user cannot mint 11", async () => {});
   it("Public user cannot mint for less than 0.08 ETH", async () => {});
+  it("If reserved mints 10, next public mint should be ID 251", async () => {});
 
   // URI
   it("URI is as expected before reveal", async () => {});
   it("URI is as expected after reveal", async () => {});
   it("Both URIs can be changed after deployment", async () => {});
+
+  // ROYALTY
+  it("Royalty calculated correctly with royaltyInfo view function", async () => {
+    // TODO
+  });
 
   // ONLY OWNER
   it("Only owner can withdraw all ETH", async () => {});
