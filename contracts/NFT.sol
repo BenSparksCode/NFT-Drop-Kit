@@ -180,10 +180,12 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
         revealed = true;
     }
 
+    // NOTE: before enabling, make sure all reserved NFTs minted
     function setPresaleMintingEnabled(bool _enabled) external onlyOwner {
         presaleMintingEnabled = _enabled;
     }
 
+    // NOTE: before enabling, make sure all reserved NFTs minted
     function setPublicMintingEnabled(bool _enabled) external onlyOwner {
         publicMintingEnabled = _enabled;
     }
