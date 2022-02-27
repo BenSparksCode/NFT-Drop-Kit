@@ -277,10 +277,6 @@ describe("Scenario Tests", function () {
     expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
   });
 
-  it("If reserved mints 10, next whitelist mint should be ID 251", async () => {
-    // TODO
-  });
-
   // PUBLIC
   it("Public user cannot mint if public disabled", async () => {
     const amountMinted = 1;
@@ -299,7 +295,27 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
   });
-  it("Public user can mint if public enabled", async () => {});
+  it.only("Public user can mint if public enabled", async () => {
+    const amountMinted = 1;
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 1000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(amountMinted);
+
+    expect(await NFT.totalSupply()).to.equal(251);
+  });
   it("Public user can mint 10", async () => {});
   it("Public user cannot mint 11", async () => {});
   it("Public user cannot mint for less than 0.08 ETH", async () => {});
