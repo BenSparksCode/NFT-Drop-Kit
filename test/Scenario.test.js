@@ -13,6 +13,7 @@ const { constants } = require("../utils/TestConstants");
 const { send1ETH } = require("../utils/TestUtils");
 
 let owner, ownerAddress;
+let alice, aliceAddress;
 let NFT;
 
 let whitelistWallets = [];
@@ -35,8 +36,9 @@ const merkleRoot = merkleTree.getHexRoot();
 
 describe("Scenario Tests", function () {
   beforeEach(async () => {
-    [owner] = await ethers.getSigners();
+    [owner, alice] = await ethers.getSigners();
     ownerAddress = await owner.getAddress();
+    aliceAddress = await alice.getAddress();
 
     const nftFactory = await ethers.getContractFactory("NFT");
     NFT = await nftFactory.deploy(
@@ -81,9 +83,10 @@ describe("Scenario Tests", function () {
   });
   it("No minting from anyone if max supply hit", async () => {
     //   TODO
+    await NFT.connect(owner).setPresaleMintingEnabled(true);
+    await NFT.connect(owner).setPublicMintingEnabled(true);
   });
 
-  // TODO - add reserveRecipient address
   // RESERVED
   it("Owner can mint 250 while presale and whitelist mints disabled", async () => {
     expect(await NFT.presaleMintingEnabled()).to.equal(false);
@@ -92,6 +95,21 @@ describe("Scenario Tests", function () {
     await NFT.connect(owner).mintReserved(250);
 
     expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+  });
+  it("RoyaltyRecipient can mint the 250 reserved", async () => {
+    expect(await NFT.presaleMintingEnabled()).to.equal(false);
+    expect(await NFT.publicMintingEnabled()).to.equal(false);
+
+    expect(await NFT.royaltyRecipient()).to.equal(constants.ROYALTY_RECIPIENT);
+
+    await NFT.connect(owner).setRoyaltyRecipient(aliceAddress);
+
+    expect(await NFT.royaltyRecipient()).to.equal(aliceAddress);
+    expect(await NFT.balanceOf(aliceAddress)).to.equal(0);
+
+    await NFT.connect(alice).mintReserved(250);
+
+    expect(await NFT.balanceOf(aliceAddress)).to.equal(250);
   });
   it("Owner can mint 250 while presale and whitelist mints enabled", async () => {
     await NFT.connect(owner).setPresaleMintingEnabled(true);

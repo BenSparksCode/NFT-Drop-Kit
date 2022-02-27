@@ -10,7 +10,7 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
     using Strings for uint256;
 
     // Royalty vars
-    address public constant royaltyRecipient =
+    address public royaltyRecipient =
         0x339Ff26CF5E9332b59A6E37C2453c4B335b839d1; // koolkidz.eth
     uint256 public royaltyPercentage = 750; // starting at 7.5% royalty
     uint256 public SCALE = 10000;
@@ -201,6 +201,13 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
     function setRoyalty(uint256 _newRoyaltyPercentage) public onlyOwner {
         require(_newRoyaltyPercentage <= SCALE, "Royalty percentage too high");
         royaltyPercentage = _newRoyaltyPercentage;
+    }
+
+    function setRoyaltyRecipient(address _newRoyaltyRecipient)
+        public
+        onlyOwner
+    {
+        royaltyRecipient = _newRoyaltyRecipient;
     }
 
     function setMaxMintAmountPublic(uint256 _newMax) public onlyOwner {
