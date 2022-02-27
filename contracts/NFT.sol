@@ -4,8 +4,9 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-contract NFT is ERC721Enumerable, Ownable {
+contract NFT is ERC721Enumerable, IERC2981, Ownable {
     using Strings for uint256;
 
     string private baseURI;
@@ -216,6 +217,30 @@ contract NFT is ERC721Enumerable, Ownable {
         require(os);
         // =============================================================================
     }
+
+    // ============ ROYALTIES ============
+
+    function royaltyInfo(uint256 tokenId, uint256 salePrice)
+        public
+        view
+        returns (address receiver, uint256 royaltyAmount)
+    {
+        // TODO
+        return (address(0), 0);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721Enumerable, IERC165)
+        returns (bool)
+    {
+        return
+            ERC721Enumerable.supportsInterface(interfaceId) ||
+            interfaceId == type(IERC2981).interfaceId;
+    }
+
+    // ============ MODIFIERS ============
 
     /**
      * @dev Only allows EOA accounts to call function
