@@ -44,8 +44,8 @@ describe("Scenario Tests", function () {
     NFT = await nftFactory.deploy(
       "Teenage Mutant Ninja Turtles",
       "TMNT",
-      constants.HIDDEN_URI,
-      constants.REVEALED_URI
+      constants.REVEALED_URI,
+      constants.HIDDEN_URI
     );
 
     // Set Merkle Root in NFT as owner
@@ -383,12 +383,106 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.totalSupply()).to.equal(250);
   });
-  it("If reserved mints 10, next public mint should be ID 251", async () => {});
 
   // URI
-  it("URI is as expected before reveal", async () => {});
-  it("URI is as expected after reveal", async () => {});
-  it("Both URIs can be changed after deployment", async () => {});
+  it("URI is as expected before reveal", async () => {
+    const amountMinted = 1;
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 1000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(amountMinted);
+
+    expect(await NFT.totalSupply()).to.equal(251);
+
+    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI);
+    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI);
+  });
+  it("URI is as expected after reveal", async () => {
+    const amountMinted = 1;
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 1000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(amountMinted);
+
+    expect(await NFT.totalSupply()).to.equal(251);
+
+    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI);
+    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI);
+
+    await NFT.connect(owner).reveal();
+
+    expect(await NFT.tokenURI(1)).to.equal(constants.REVEALED_URI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(
+      constants.REVEALED_URI + "251.json"
+    );
+  });
+  it("Both URIs can be changed after deployment", async () => {
+    const amountMinted = 1;
+    const pubWallets = generateSignerWallets(1);
+    const newUnrevealedURI = "NEW UNREVEALED URI";
+    const newBaseURI = "bussy";
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 1000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(amountMinted);
+
+    expect(await NFT.totalSupply()).to.equal(251);
+
+    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI);
+    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI);
+
+    await NFT.connect(owner).setNotRevealedURI(newUnrevealedURI);
+
+    expect(await NFT.tokenURI(1)).to.equal(newUnrevealedURI);
+    expect(await NFT.tokenURI(251)).to.equal(newUnrevealedURI);
+
+    await NFT.connect(owner).reveal();
+
+    expect(await NFT.tokenURI(1)).to.equal(constants.REVEALED_URI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(
+      constants.REVEALED_URI + "251.json"
+    );
+
+    await NFT.connect(owner).setBaseURI(newBaseURI);
+
+    expect(await NFT.tokenURI(1)).to.equal(newBaseURI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(newBaseURI + "251.json");
+  });
 
   // ROYALTY
   it("Royalty calculated correctly with royaltyInfo view function", async () => {
@@ -401,5 +495,5 @@ describe("Scenario Tests", function () {
   // ONLY OWNER
   it("Only owner can withdraw all ETH", async () => {});
   it("Only owner can set royalty percentage", async () => {});
-  it("Only owner or reserve minter can mint reserved NFTs", async () => {});
+  it("Only owner can pause minting", async () => {});
 });
