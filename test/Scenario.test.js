@@ -486,10 +486,38 @@ describe("Scenario Tests", function () {
 
   // ROYALTY
   it("Royalty calculated correctly with royaltyInfo view function", async () => {
-    // TODO
+    const amountMinted = 1;
+    const pubWallets = generateSignerWallets(1);
+    const tradeAmount = ethers.utils.parseEther("12");
+    const expectedRoyalty = tradeAmount
+      .mul(constants.ROYALTY)
+      .div(constants.SCALE);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 1000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    const output1 = await NFT.royaltyInfo(1, tradeAmount);
+    const output251 = await NFT.royaltyInfo(251, tradeAmount);
+
+    expect(output1.receiver).to.equal(constants.ROYALTY_RECIPIENT);
+    expect(output251.receiver).to.equal(constants.ROYALTY_RECIPIENT);
+    expect(output1.royaltyAmount).to.equal(expectedRoyalty);
+    expect(output251.royaltyAmount).to.equal(expectedRoyalty);
   });
   it("royaltyInfo returns 0 on non-existant token query", async () => {
-    // TODO
+    await expect(
+      NFT.royaltyInfo(1, ethers.utils.parseEther("12"))
+    ).to.be.revertedWith("ERC721Metadata: Royalty query for nonexistent token");
   });
 
   // ONLY OWNER
