@@ -295,7 +295,7 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.balanceOf(whitelistWallets[index].address)).to.equal(0);
   });
-  it.only("Public user can mint if public enabled", async () => {
+  it("Public user can mint if public enabled", async () => {
     const amountMinted = 1;
     const pubWallets = generateSignerWallets(1);
 
@@ -316,9 +316,73 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.totalSupply()).to.equal(251);
   });
-  it("Public user can mint 10", async () => {});
-  it("Public user cannot mint 11", async () => {});
-  it("Public user cannot mint for less than 0.08 ETH", async () => {});
+  it("Public user can mint 10", async () => {
+    const amountMinted = 10;
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 2000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(amountMinted);
+
+    expect(await NFT.totalSupply()).to.equal(260);
+  });
+  it("Public user cannot mint 11", async () => {
+    const amountMinted = 11;
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await expect(
+      NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+        gasLimit: 3000000,
+        value: constants.MINT_COST.mul(amountMinted),
+      })
+    ).to.be.revertedWith("Mints exceed 10 per address");
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(0);
+
+    expect(await NFT.totalSupply()).to.equal(250);
+  });
+  it("Public user cannot mint for less than 0.08 ETH", async () => {
+    const amountMinted = 1;
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await expect(
+      NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+        gasLimit: 1000000,
+        value: constants.MINT_COST.mul(amountMinted).sub(1),
+      })
+    ).to.be.revertedWith("Not enough ETH");
+
+    expect(await NFT.balanceOf(pubWallets[0].address)).to.equal(0);
+
+    expect(await NFT.totalSupply()).to.equal(250);
+  });
   it("If reserved mints 10, next public mint should be ID 251", async () => {});
 
   // URI
