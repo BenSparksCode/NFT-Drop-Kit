@@ -1,13 +1,11 @@
 const { MerkleTree } = require("merkletreejs");
 const keccak256 = require("keccak256");
-const hre = require("hardhat");
-const { ethers } = require("hardhat");
+// const hre = require("hardhat");
+// const { ethers } = require("hardhat");
 require("@nomiclabs/hardhat-etherscan");
-const chalk = require("chalk");
+// const chalk = require("chalk");
 const fs = require("fs");
-const ProgressBar = require("progress");
-
-const { constants } = require("../utils/TestConstants");
+// const ProgressBar = require("progress");
 
 const CSV_FILE_NAME = "KoolKidzMasterList.csv";
 const ADDRESS_TO_VERIFY = "0x5fc0be7a7d67a98bea9aad9e4583332e44e19f0f";
@@ -31,6 +29,7 @@ async function main() {
   // 4. get merkle proof for a specific address
   const merkleProof = merkleTree.getHexProof(keccak256(ADDRESS_TO_VERIFY));
 
+  // This is just a check in JS that should return true if address is in whitelist
   const merkleProofVerification = merkleTree.verify(
     merkleProof,
     keccak256(ADDRESS_TO_VERIFY),
