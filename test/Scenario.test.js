@@ -539,7 +539,6 @@ describe("Scenario Tests", function () {
 
     const contractBal = await ethers.provider.getBalance(NFT.address);
     const ownerBal1 = await ethers.provider.getBalance(ownerAddress);
-    console.log(contractBal);
 
     expect(contractBal).to.equal(constants.MINT_COST.mul(amountMinted));
 

@@ -7,6 +7,7 @@
     "test:parallel": "mocha --require hardhat/register --recursive --parallel --timeout 10000 --exit",
     "test:merkle": "hardhat test test/MerkleTree.test.js ",
     "test:scen": "hardhat test test/Scenario.test.js",
+    "build-merkle-tree": "hardhat run scripts/build_merkle_tree.js",
     "compile": "hardhat compile",
     "deploy:mumbai": "hardhat clean && hardhat run --network mumbai scripts/deploy.js",
     "deploy:polygon": "hardhat clean && hardhat run --network polygon scripts/deploy.js",
