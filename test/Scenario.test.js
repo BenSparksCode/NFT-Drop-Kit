@@ -555,7 +555,7 @@ describe("Scenario Tests", function () {
       constants.MINT_COST.mul(amountMinted).div(1000)
     );
   });
-  it.only("Only owner can set royalty percentage", async () => {
+  it("Only owner can set royalty percentage", async () => {
     const newRoyalty = 500;
 
     expect(await NFT.royaltyPercentage()).to.equal(constants.ROYALTY);
@@ -568,5 +568,39 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.royaltyPercentage()).to.equal(newRoyalty);
   });
-  it("Only owner can pause minting", async () => {});
+  it("Only owner can pause minting", async () => {
+    const pubWallets = generateSignerWallets(1);
+
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await expect(NFT.connect(alice).pause(true)).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    // await NFT.connect(pubWallets[0]).mintPublic(1, {
+    //   gasLimit: 3000000,
+    //   value: constants.MINT_COST,
+    // });
+
+    await NFT.connect(owner).mintReserved(1);
+
+    expect(await NFT.paused()).to.equal(false);
+
+    await NFT.connect(owner).pause(true);
+
+    await expect(NFT.connect(owner).mintReserved(1)).to.be.revertedWith(
+      "Minting is paused"
+    );
+
+    await expect(
+      NFT.connect(pubWallets[0]).mintPublic(1, {
+        gasLimit: 3000000,
+        value: constants.MINT_COST,
+      })
+    ).to.be.revertedWith("Minting is paused");
+
+    expect(await NFT.paused()).to.equal(true);
+  });
 });
