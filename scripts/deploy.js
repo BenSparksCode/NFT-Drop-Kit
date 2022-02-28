@@ -98,10 +98,10 @@ async function main() {
 
   const nft = await deploy(
     "NFT",
-    ["Test Apes", "TEST", "revealed uri", "hidden uri"],
+    ["KoolKidz", "KOOL", "revealed uri", "hidden uri"],
     {
-      gasLimit,
-      gasPrice,
+      // gasLimit,
+      // gasPrice,
     },
     {}
   );
