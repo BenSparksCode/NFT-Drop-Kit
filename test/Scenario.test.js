@@ -521,7 +521,40 @@ describe("Scenario Tests", function () {
   });
 
   // ONLY OWNER
-  it("Only owner can withdraw all ETH", async () => {});
+  it("Only owner can withdraw all ETH", async () => {
+    const amountMinted = 10;
+    const pubWallets = generateSignerWallets(1);
+    await NFT.connect(owner).setPublicMintingEnabled(true);
+
+    await NFT.connect(owner).mintReserved(250);
+
+    expect(await NFT.balanceOf(ownerAddress)).to.equal(250);
+
+    await send1ETH(owner, pubWallets[0].address);
+
+    await NFT.connect(pubWallets[0]).mintPublic(amountMinted, {
+      gasLimit: 3000000,
+      value: constants.MINT_COST.mul(amountMinted),
+    });
+
+    const contractBal = await ethers.provider.getBalance(NFT.address);
+    const ownerBal1 = await ethers.provider.getBalance(ownerAddress);
+    console.log(contractBal);
+
+    expect(contractBal).to.equal(constants.MINT_COST.mul(amountMinted));
+
+    await expect(NFT.connect(alice).withdraw()).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
+
+    await NFT.connect(owner).withdraw();
+    const ownerBal2 = await ethers.provider.getBalance(ownerAddress);
+    expect(await ethers.provider.getBalance(NFT.address)).to.equal(0);
+    expect(ownerBal2.sub(ownerBal1)).to.be.closeTo(
+      constants.MINT_COST.mul(amountMinted),
+      constants.MINT_COST.mul(amountMinted).div(1000)
+    );
+  });
   it("Only owner can set royalty percentage", async () => {});
   it("Only owner can pause minting", async () => {});
 });
