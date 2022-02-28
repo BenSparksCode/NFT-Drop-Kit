@@ -8,6 +8,7 @@
     "test:merkle": "hardhat test test/MerkleTree.test.js ",
     "test:scen": "hardhat test test/Scenario.test.js",
     "build-merkle-tree": "hardhat run scripts/build_merkle_tree.js",
+    "merkle-proof": "hardhat run scripts/merkle_proof.js",
     "compile": "hardhat compile",
     "deploy:mumbai": "hardhat clean && hardhat run --network mumbai scripts/deploy.js",
     "deploy:polygon": "hardhat clean && hardhat run --network polygon scripts/deploy.js",
