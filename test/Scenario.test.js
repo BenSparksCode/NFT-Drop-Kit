@@ -555,6 +555,18 @@ describe("Scenario Tests", function () {
       constants.MINT_COST.mul(amountMinted).div(1000)
     );
   });
-  it("Only owner can set royalty percentage", async () => {});
+  it.only("Only owner can set royalty percentage", async () => {
+    const newRoyalty = 500;
+
+    expect(await NFT.royaltyPercentage()).to.equal(constants.ROYALTY);
+
+    await expect(NFT.connect(alice).setRoyalty(newRoyalty)).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
+
+    await NFT.connect(owner).setRoyalty(newRoyalty);
+
+    expect(await NFT.royaltyPercentage()).to.equal(newRoyalty);
+  });
   it("Only owner can pause minting", async () => {});
 });
