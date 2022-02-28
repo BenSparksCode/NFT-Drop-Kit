@@ -158,7 +158,16 @@ contract NFT is ERC721Enumerable, IERC2981, Ownable {
         );
 
         if (revealed == false) {
-            return notRevealedUri;
+            return
+                bytes(notRevealedUri).length > 0
+                    ? string(
+                        abi.encodePacked(
+                            notRevealedUri,
+                            tokenId.toString(),
+                            baseExtension
+                        )
+                    )
+                    : "";
         }
 
         string memory currentBaseURI = _baseURI();

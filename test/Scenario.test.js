@@ -406,8 +406,8 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.totalSupply()).to.equal(251);
 
-    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI);
-    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI);
+    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI + "251.json");
   });
   it("URI is as expected after reveal", async () => {
     const amountMinted = 1;
@@ -430,8 +430,8 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.totalSupply()).to.equal(251);
 
-    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI);
-    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI);
+    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI + "251.json");
 
     await NFT.connect(owner).reveal();
 
@@ -463,13 +463,13 @@ describe("Scenario Tests", function () {
 
     expect(await NFT.totalSupply()).to.equal(251);
 
-    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI);
-    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI);
+    expect(await NFT.tokenURI(1)).to.equal(constants.HIDDEN_URI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(constants.HIDDEN_URI + "251.json");
 
     await NFT.connect(owner).setNotRevealedURI(newUnrevealedURI);
 
-    expect(await NFT.tokenURI(1)).to.equal(newUnrevealedURI);
-    expect(await NFT.tokenURI(251)).to.equal(newUnrevealedURI);
+    expect(await NFT.tokenURI(1)).to.equal(newUnrevealedURI + "1.json");
+    expect(await NFT.tokenURI(251)).to.equal(newUnrevealedURI + "251.json");
 
     await NFT.connect(owner).reveal();
 

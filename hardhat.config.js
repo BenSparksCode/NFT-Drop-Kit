@@ -70,6 +70,11 @@ module.exports = {
       accounts: [`${process.env.RINKEBY_DEPLOYER_PRIV_KEY}`],
       chainId: 4,
     },
+    mainnet: {
+      url: "https://eth-mainnet.alchemyapi.io/v2/" + process.env.ALCHEMY_API,
+      accounts: [`${process.env.DEPLOYER_PRIV_KEY}`],
+      chainId: 1,
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

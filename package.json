@@ -13,6 +13,7 @@
     "deploy:mumbai": "hardhat clean && hardhat run --network mumbai scripts/deploy.js",
     "deploy:polygon": "hardhat clean && hardhat run --network polygon scripts/deploy.js",
     "deploy:rinkeby": "hardhat clean && hardhat run --network rinkeby scripts/deploy.js",
+    "deploy:mainnet": "hardhat clean && hardhat run --network mainnet scripts/deploy.js",
     "accounts": "hardhat accounts",
     "balance": "hardhat balance",
     "generate": "hardhat generate",
