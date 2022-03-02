@@ -98,7 +98,12 @@ async function main() {
 
   const nft = await deploy(
     "NFT",
-    ["KoolKidz", "KOOL", "revealed uri", "hidden uri"],
+    [
+      "KoolKidz",
+      "KOOL",
+      "revealed uri",
+      "ipfs://QmZxhRmggsJdfTZ4eiV5XQBpEHCvg58tRMTEz6rfar61qR/",
+    ],
     {
       // gasLimit,
       // gasPrice,
