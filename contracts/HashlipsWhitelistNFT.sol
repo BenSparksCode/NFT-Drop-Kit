@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-contract NFT is ERC721Enumerable, IERC2981, Ownable {
+contract HashlipsWhitelistNFT is ERC721Enumerable, IERC2981, Ownable {
     using Strings for uint256;
 
     // Royalty vars
