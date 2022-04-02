@@ -222,7 +222,7 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
 
     function withdrawETH() public payable onlyOwner {
         // Send ETH to Owner
-        (bool sent, ) = payable(owner()).call{value: address(this).balance}("");
+        payable(owner()).call{value: address(this).balance}("");
     }
 
     function withdrawToken(address _tokenAddress) public onlyOwner {
