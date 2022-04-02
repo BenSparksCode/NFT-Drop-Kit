@@ -18,23 +18,25 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
 
     uint256 public constant SCALE = 1e18;
 
-    uint256 public phaseTwoPrice;
-    uint256 public publicPrice;
-    uint256 private immutable MAX_PER_ADDRESS_PHASE_TWO;
-    uint256 private immutable MAX_PER_ADDRESS_PUBLIC;
-    uint256 private immutable MAX_TOKEN_SUPPLY;
-    uint256 public immutable PHASE_ONE_START_TIME;
-    uint256 public immutable PHASE_TWO_START_TIME;
-    uint256 public immutable PUBLIC_START_TIME;
+    uint256 public constant WHITELIST_PRICE = 0.07 ether;
+    uint256 public constant PUBLIC_PRICE = 0.1 ether;
+    uint256 private constant MAX_PER_ADDRESS_WHITELIST = 5;
+    uint256 private constant MAX_PER_ADDRESS_PUBLIC = 15;
+    uint256 private constant MAX_TOKEN_SUPPLY = 10_000;
+
+
+
+    // TODO onlyOwner setters for these
+    bool public presaleMintingEnabled;
+    bool public publicMintingEnabled;
 
     uint256 public royaltyCut = 1e17; // default = 10%
     address public royaltyRecipient;
+    uint256 public devGroupCut;
+    address public devGroupRecipient;
 
-    bytes32 private phaseOneMerkleRoot;
-    bytes32 private phaseTwoMerkleRoot;
-    mapping(address => uint256) public mintedTokens; // how many an account has minted
-    mapping(address => bool) public phaseOneClaimed;
-    mapping(address => bool) public phaseTwoClaimed;
+    bytes32 private whitelistMerkleRoot;
+    mapping(address => uint256) public tokensMintedPerAddress;
 
     // --------------------------------------------------------------
     // EVENTS
@@ -224,9 +226,17 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
         emit NewRoyaltyCutSet(_newCut);
     }
 
+    // TODO make ERC20 withdraw function for token royalties too
+    // TODO 7.5% of all ETH (sales and royalties) to dev group
     function withdraw() public payable onlyOwner {
-        (bool os, ) = payable(owner()).call{value: address(this).balance}("");
-        if (!os) revert WithdrawEthFailed();
+
+
+        // Send 7.5% of ETH to Dev Group
+        (bool send1, ) = payable(owner()).call{value: address(this).balance}("");
+        // Send 92.5% of ETH to Owner
+        (bool send2, ) = payable(owner()).call{value: address(this).balance}("");
+
+        if(!send1 || !send2) revert WithdrawEthFailed();
     }
 
     // --------------------------------------------------------------
