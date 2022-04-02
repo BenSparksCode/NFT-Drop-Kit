@@ -31,7 +31,6 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
     bool public publicMintingEnabled;
 
     uint256 public royaltyCut = 1e17; // default = 10%
-    address public royaltyRecipient;
     uint256 public devGroupCut;
     address public devGroupRecipient;
 
@@ -215,28 +214,20 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
         emit PhaseTwoMerkleRootUpdated(_merkleRoot);
     }
 
-    function setRoyaltyRecipient(address _newRecipient) public onlyOwner {
-        royaltyRecipient = _newRecipient;
-        emit NewRoyaltyRecipientSet(_newRecipient);
-    }
-
     function setRoyaltyCut(uint256 _newCut) public onlyOwner {
         if (_newCut > SCALE) revert RoyaltyCutTooHigh();
         royaltyCut = _newCut;
         emit NewRoyaltyCutSet(_newCut);
     }
 
-    // TODO make ERC20 withdraw function for token royalties too
-    // TODO 7.5% of all ETH (sales and royalties) to dev group
-    function withdraw() public payable onlyOwner {
+    function withdrawETH() public payable onlyOwner {
+        // Send ETH to Owner
+        (bool sent, ) = payable(owner()).call{value: address(this).balance}("");
+    }
 
-
-        // Send 7.5% of ETH to Dev Group
-        (bool send1, ) = payable(owner()).call{value: address(this).balance}("");
-        // Send 92.5% of ETH to Owner
-        (bool send2, ) = payable(owner()).call{value: address(this).balance}("");
-
-        if(!send1 || !send2) revert WithdrawEthFailed();
+    function withdrawToken(address _tokenAddress) public onlyOwner {
+        // Send Tokens to Owner
+        IERC20(_tokenAddress).transfer(owner(), IERC20(_tokenAddress).balanceOf(address(this)));
     }
 
     // --------------------------------------------------------------
@@ -253,13 +244,14 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
         return ERC721A.supportsInterface(interfaceId) || interfaceId == type(IERC2981).interfaceId;
     }
 
+    // All royalties sent to this contract, split in withdraw()
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
         external
         view
         returns (address receiver, uint256 royaltyAmount)
     {
         royaltyAmount = (_salePrice * royaltyCut) / SCALE;
-        return (royaltyRecipient, royaltyAmount);
+        return (address(this), royaltyAmount);
     }
 
     /**
@@ -286,4 +278,6 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
         }
         return string(buffer);
     }
+
+
 }
