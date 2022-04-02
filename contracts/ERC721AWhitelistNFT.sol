@@ -279,5 +279,11 @@ contract ERC721AWhitelistNFT is ERC721A, Ownable, ReentrancyGuard, IERC2981 {
         return string(buffer);
     }
 
+    // --------------------------------------------------------------
+    // FALLBACK AND RECIEVE FUNCTION FOR ACCEPTING SENT ETH
+    // --------------------------------------------------------------
 
+    receive() external payable {}
+
+    fallback() external payable {}
 }
