@@ -20,7 +20,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.11",
+        version: "0.8.13",
         settings: {
           optimizer: {
             enabled: true,
@@ -55,16 +55,6 @@ module.exports = {
       },
       gasPrice: 0,
     },
-    mumbai: {
-      url: "https://polygon-mumbai.g.alchemy.com/v2/" + process.env.ALCHEMY_API,
-      accounts: [`${process.env.MUMBAI_DEPLOYER_PRIV_KEY}`],
-      chainId: 80001,
-    },
-    polygon: {
-      url: "https://matic-mainnet.chainstacklabs.com" + process.env.ALCHEMY_API,
-      accounts: [`${process.env.POLYGON_DEPLOYER_PRIV_KEY}`],
-      chainId: 137,
-    },
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/" + process.env.ALCHEMY_API,
       accounts: [`${process.env.RINKEBY_DEPLOYER_PRIV_KEY}`],
@@ -72,7 +62,7 @@ module.exports = {
     },
     mainnet: {
       url: "https://eth-mainnet.alchemyapi.io/v2/" + process.env.ALCHEMY_API,
-      accounts: [`${process.env.DEPLOYER_PRIV_KEY}`],
+      accounts: [`${process.env.MAINNET_DEPLOYER_PRIV_KEY}`],
       chainId: 1,
     },
   },
